@@ -1,0 +1,42 @@
+/* 
+  responsive.css 
+  Règles spécifiques pour la responsivité au-delà de Tailwind
+*/
+
+/* Personnalisation de la scrollbar pour webkit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Ajustements globaux Média Queries */
+@media (max-width: 768px) {
+  /* Réduction de la taille globale des marges sur mobile */
+  :root {
+    --container-padding: 1rem;
+  }
+  
+  /* Cache certains éléments par défaut sur petit écran si besoin d'un forçage */
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  :root {
+    --container-padding: 2rem;
+  }
+}

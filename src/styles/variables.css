@@ -1,0 +1,44 @@
+/* 
+  variables.css 
+  Variables globales du projet Gestion Immobilisation
+*/
+
+:root {
+  /* Couleurs principales */
+  --color-primary: #2563eb;       /* blue-600 */
+  --color-primary-hover: #1d4ed8; /* blue-700 */
+  --color-secondary: #475569;     /* slate-600 */
+  
+  /* Arrière-plans */
+  --bg-main: #f8fafc;        /* slate-50 */
+  --bg-card: #ffffff;        /* white */
+  --bg-sidebar: #111827;     /* gray-900 */
+  
+  /* Textes */
+  --text-primary: #1e293b;   /* slate-800 */
+  --text-secondary: #64748b; /* slate-500 */
+  --text-light: #f8fafc;     /* slate-50 */
+  
+  /* Statuts et Alertes */
+  --color-success: #16a34a;  /* green-600 */
+  --bg-success: #f0fdf4;     /* green-50 */
+  --color-warning: #eab308;  /* yellow-500 */
+  --bg-warning: #fefce8;     /* yellow-50 */
+  --color-error: #dc2626;    /* red-600 */
+  --bg-error: #fef2f2;       /* red-50 */
+  --color-info: #0ea5e9;     /* sky-500 */
+  --bg-info: #f0f9ff;        /* sky-50 */
+
+  /* Typographie */
+  --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Radius & Shadows */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  
+  /* Transitions */
+  --transition-speed: 150ms;
+}

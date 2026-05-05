@@ -1,0 +1,66 @@
+/* frontend/src/styles/components/layout.css */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  margin-top: 64px; /* Hauteur du header */
+}
+
+.app-content {
+  flex: 1;
+  margin-left: 260px; /* Largeur de la sidebar */
+  padding: 24px;
+  background: #f7fafc;
+  min-height: calc(100vh - 64px);
+  transition: margin-left 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .app-content {
+    margin-left: 0;
+  }
+  
+  .sidebar-open + .app-content {
+    margin-left: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    padding: 16px;
+  }
+}
+
+/* Sidebar réduite */
+.sidebar-collapsed + .app-content {
+  margin-left: 70px;
+}
+
+/* Contenu de page */
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  font-size: 24px;
+  color: #2d3748;
+  margin: 0 0 8px 0;
+}
+
+.page-header p {
+  color: #718096;
+  margin: 0;
+}
+
+.page-content {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
