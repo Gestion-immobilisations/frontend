@@ -68,7 +68,7 @@ const Sidebar = () => {
       title: 'Tableau de bord',
       path: '/dashboard',
       icon: '📊',
-      roles: ['ADMIN', 'DG', 'COMPTABLE', 'TECHNICIEN', 'CAISSE'],
+      roles: ['ADMIN', 'DG', 'COMPTABLE', 'TECHNICIEN', 'CAISSE', 'MAGASINIER'],
     },
     {
       title: 'Utilisateurs',
@@ -118,13 +118,101 @@ const Sidebar = () => {
       title: 'Pièces',
       path: '/pieces',
       icon: '🔩',
-      roles: ['ADMIN', 'TECHNICIEN', 'COMPTABLE'],
+      roles: ['ADMIN', 'TECHNICIEN', 'COMPTABLE', 'MAGASINIER'],
+    },
+    // ========== 🆕 NOUVEAU MENU POUR LE MAGASINIER ==========
+    {
+      title: 'Gestion des stocks',
+      icon: '📦',
+      roles: ['MAGASINIER'],  // Uniquement pour le magasinier
+      children: [
+        { 
+          title: 'Aperçu du stock', 
+          path: '/stock/apercu', 
+          roles: ['MAGASINIER'],
+          icon: '📊'
+        },
+        { 
+          title: 'Entrées en stock', 
+          path: '/stock/entrees', 
+          roles: ['MAGASINIER'],
+          icon: '📥'
+        },
+        { 
+          title: 'Sorties de stock', 
+          path: '/stock/sorties', 
+          roles: ['MAGASINIER'],
+          icon: '📤'
+        },
+        { 
+          title: 'Mouvements', 
+          path: '/stock/mouvements', 
+          roles: ['MAGASINIER'],
+          icon: '🔄'
+        },
+        { 
+          title: 'Inventaire', 
+          path: '/stock/inventaire', 
+          roles: ['MAGASINIER'],
+          icon: '📋'
+        },
+        { 
+          title: 'Alerte stock', 
+          path: '/stock/alertes', 
+          roles: ['MAGASINIER'],
+          icon: '⚠️'
+        },
+      ]
     },
     {
+      title: 'Pièces de rechange',
+      icon: '🔧',
+      roles: ['MAGASINIER', 'ADMIN', 'TECHNICIEN'],  // Accessible aussi aux autres rôles
+      children: [
+        { 
+          title: 'Toutes les pièces', 
+          path: '/pieces', 
+          roles: ['MAGASINIER', 'ADMIN', 'TECHNICIEN', 'COMPTABLE'],
+          icon: '🔩'
+        },
+        { 
+          title: 'Ajouter une pièce', 
+          path: '/pieces/nouveau', 
+          roles: ['MAGASINIER', 'ADMIN'],
+          icon: '➕'
+        },
+        { 
+          title: 'Catégories', 
+          path: '/pieces/categories', 
+          roles: ['MAGASINIER', 'ADMIN'],
+          icon: '📁'
+        },
+        { 
+          title: 'Fournisseurs', 
+          path: '/pieces/fournisseurs', 
+          roles: ['MAGASINIER', 'ADMIN'],
+          icon: '🏢'
+        },
+        { 
+          title: 'Pièces critiques', 
+          path: '/pieces/critiques', 
+          roles: ['MAGASINIER', 'ADMIN', 'TECHNICIEN'],
+          icon: '⚠️'
+        },
+      ]
+    },
+    // ========== FIN NOUVEAU MENU MAGASINIER ==========
+    
+    {
       title: 'Rapports',
-      path: '/rapports',
       icon: '📑',
-      roles: ['ADMIN', 'DG', 'COMPTABLE'],
+      roles: ['ADMIN', 'DG', 'COMPTABLE', 'MAGASINIER'], // ✅ Ajout MAGASINIER pour les rapports de stock
+      children: [
+        { title: 'Rapports généraux', path: '/rapports', roles: ['ADMIN', 'DG', 'COMPTABLE'] },
+        { title: 'Rapports de stock', path: '/rapports/stock', roles: ['ADMIN', 'DG', 'COMPTABLE', 'MAGASINIER'] },
+        { title: 'Rapports de mouvements', path: '/rapports/mouvements', roles: ['ADMIN', 'DG', 'MAGASINIER'] },
+        { title: 'Valeur du stock', path: '/rapports/valeur-stock', roles: ['ADMIN', 'DG', 'COMPTABLE', 'MAGASINIER'] },
+      ]
     },
     {
       title: 'Audit',
@@ -132,11 +220,16 @@ const Sidebar = () => {
       icon: '🔍',
       roles: ['ADMIN', 'DG'],
     },
-    {
+     {
       title: 'Paramètres',
-      path: '/parametres',
       icon: '⚙️',
-      roles: ['ADMIN'],
+      roles: ['ADMIN', 'MAGASINIER'], // ✅ Ajout MAGASINIER pour paramètres stock
+      children: [
+        { title: 'Paramètres généraux', path: '/parametres', roles: ['ADMIN'] },
+        { title: 'Paramètres stock', path: '/parametres/stock', roles: ['ADMIN', 'MAGASINIER'] },
+        { title: 'Unités de mesure', path: '/parametres/unites', roles: ['ADMIN', 'MAGASINIER'] },
+        { title: 'Emplacements', path: '/parametres/emplacements', roles: ['ADMIN', 'MAGASINIER'] },
+      ]
     },
   ];
 
