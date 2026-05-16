@@ -1,9 +1,7 @@
 /* frontend/src/styles/main.css */
 
 /* === Imports des styles des composants === */
-@import './../styles/components/header.css';
-@import './../styles/components/layout.css';
-@import './../styles/components/sidebar.css';
+@import './assetflow.css';
 @import './../styles/pages/dashboard.css';
 /*@import './pages/login.css';*/
 @import './../styles/unauthorized.css';
