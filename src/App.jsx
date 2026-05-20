@@ -27,10 +27,10 @@ import NouveauBien from './components/biens/nouveau/NouveauBien';
 import FicheBien from './components/biens/FicheBien';
 import EditBien from './components/biens/EditBien';
 
-import GestionUtilisateurs from './pages/GestionUtilisateurs';
-import GestionRoles from './pages/GestionRoles';
-import JournalAudit from './pages/JournalAudit';
-import ParametresSysteme from './pages/ParametresSysteme';
+// Utilisateurs (Admin uniquement) - À décommenter quand les fichiers existent
+// import ListeUtilisateurs from './components/utilisateurs/ListeUtilisateurs';
+// import NouveauUtilisateur from './components/utilisateurs/NouveauUtilisateur';
+// import FicheUtilisateur from './components/utilisateurs/FicheUtilisateur';
 
 // Pannes (Technicien) - À décommenter quand les fichiers existent
 // import ListePannes from './components/pannes/ListePannes';
@@ -51,6 +51,11 @@ import ParametresSysteme from './pages/ParametresSysteme';
 // Rapports - À décommenter quand les fichiers existent
 // import RapportsFinanciers from './components/rapports/RapportsFinanciers';
 
+// Audit - À décommenter quand les fichiers existent
+// import JournalAudit from './components/audit/JournalAudit';
+
+// Paramètres (Admin) - À décommenter quand les fichiers existent
+// import ParametresSysteme from './components/administration/ParametresSysteme';
 
 function App() {
   return (
@@ -96,55 +101,78 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            <Route
-              path="/biens/:id"
+            
+            {/*//✅ Route pour voir le détail d'un bien*/}
+              
+            <Route 
+              path="/biens" 
               element={
                 <ProtectedRoute allowedRoles={[]}>
                   <FicheBien />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/biens/:id/edit"
+              
+            
+            
+            
+            {/* ✅ Route pour modifier un bien */}
+            
+            <Route 
+              path="/biens" 
               element={
                 <ProtectedRoute allowedRoles={[]}>
                   <EditBien />
                 </ProtectedRoute>
-              }
+              } 
             />
+            
+            
 
-            <Route
-              path="/utilisateurs"
+            {/* ==================== ROUTES ADMIN UNIQUEMENT ==================== */}
+            {/* À DÉCOMMENTER QUAND LES COMPOSANTS SERONT CRÉÉS */}
+            {/* 
+            <Route 
+              path="/utilisateurs" 
               element={
                 <ProtectedRoute allowedRoles={['ADMIN']}>
-                  <GestionUtilisateurs />
+                  <ListeUtilisateurs />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/roles"
+            <Route 
+              path="/utilisateurs/nouveau" 
               element={
                 <ProtectedRoute allowedRoles={['ADMIN']}>
-                  <GestionRoles />
+                  <NouveauUtilisateur />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/parametres"
+            <Route 
+              path="/utilisateurs/:id" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <FicheUtilisateur />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/parametres" 
               element={
                 <ProtectedRoute allowedRoles={['ADMIN']}>
                   <ParametresSysteme />
                 </ProtectedRoute>
-              }
+              } 
             />
-            <Route
-              path="/audit"
+            <Route 
+              path="/audit" 
               element={
-                <ProtectedRoute allowedRoles={['ADMIN', 'DG']}>
+                <ProtectedRoute allowedRoles={['ADMIN']}>
                   <JournalAudit />
                 </ProtectedRoute>
-              }
+              } 
             />
+            */}
 
             {/* ==================== ROUTES DG + ADMIN ==================== */}
             {/* À DÉCOMMENTER QUAND LES COMPOSANTS SERONT CRÉÉS */}

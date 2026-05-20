@@ -1,171 +1,95 @@
-﻿import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Download, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
-import PageHeader from '../components/ui/PageHeader';
-import StatCard from '../components/ui/StatCard';
-import Badge from '../components/ui/Badge';
-import { biensService } from '../services/biens';
+// frontend/src/pages/Dashboard.jsx
+import React from 'react';
 import { useAuth } from '../context/AuthContext';
-
-const DEMO_ACTIVITIES = [
-  { asset: 'MacBook Pro M2 (MC-84)', action: 'Attribution', user: 'L. Petit', date: "Aujourd'hui, 09:42", status: 'success', label: 'SUCCÈS' },
-  { asset: 'Foreuse Caterpillar (FR-88)', action: 'Maintenance', user: 'J. Durand', date: 'Hier, 16:15', status: 'progress', label: 'EN COURS' },
-  { asset: 'Camion Logistique (VH-89)', action: 'Retrait', user: 'M. Lefebvre', date: '05 Mai, 14:00', status: 'rejected', label: 'REJETÉ' },
-];
+import '../styles/pages/dashboard.css';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
-  const [stats, setStats] = useState({ total: 0, maintenance: 0 });
 
-  useEffect(() => {
-    biensService
-      .getStatistics()
-      .then((data) => {
-        setStats({
-          total: data?.total ?? data?.total_biens ?? 0,
-          maintenance: data?.en_maintenance ?? data?.maintenance ?? 0,
-        });
-      })
-      .catch(() => {});
-  }, []);
-
-  const roleWidgets = {
-    ADMIN: { users: '24', alerts: '12' },
-    DG: { users: '24', alerts: '2' },
-    COMPTABLE: { users: '18', alerts: '5' },
-    TECHNICIEN: { users: '8', alerts: '3' },
-    CAISSE: { users: '6', alerts: '4' },
+  const getWelcomeMessage = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Bon matin';
+    if (hour < 18) return 'Bon après-midi';
+    return 'Bonsoir';
   };
-  const w = roleWidgets[user?.roles?.[0]] || roleWidgets.TECHNICIEN;
+
+  const getDashboardWidgets = () => {
+    const role = user?.roles?.[0];
+    
+    const widgets = {
+      'ADMIN': [
+        { title: 'Utilisateurs actifs', value: '24', icon: '👥', color: '#667eea' },
+        { title: 'Biens enregistrés', value: '156', icon: '🏷️', color: '#4ecdc4' },
+        { title: 'Pannes en cours', value: '3', icon: '⚠️', color: '#ff6b6b' },
+        { title: 'Validations en attente', value: '7', icon: '✅', color: '#f9ca24' },
+      ],
+      'DG': [
+        { title: 'Valeur du parc', value: '2.4M €', icon: '💰', color: '#667eea' },
+        { title: 'Taux d\'utilisation', value: '87%', icon: '📊', color: '#4ecdc4' },
+        { title: 'Alertes stratégiques', value: '2', icon: '🔔', color: '#ff6b6b' },
+        { title: 'Renouvellements', value: '5', icon: '🔄', color: '#a55eea' },
+      ],
+      'COMPTABLE': [
+        { title: 'Amortissements du mois', value: '12.5K €', icon: '📈', color: '#667eea' },
+        { title: 'Écritures en attente', value: '8', icon: '📝', color: '#4ecdc4' },
+        { title: 'Dép validations', value: '3', icon: '✅', color: '#f9ca24' },
+        { title: 'Prévisions Q2', value: '45K €', icon: '🔮', color: '#a55eea' },
+      ],
+      'TECHNICIEN': [
+        { title: 'Mes interventions', value: '5', icon: '🔧', color: '#667eea' },
+        { title: 'Pannes assignées', value: '2', icon: '⚠️', color: '#ff6b6b' },
+        { title: 'Maintenances cette semaine', value: '3', icon: '📅', color: '#4ecdc4' },
+        { title: 'Pièces en stock', value: '24', icon: '🔩', color: '#f9ca24' },
+      ],
+      'CAISSE': [
+        { title: 'Paiements à valider', value: '4', icon: '💳', color: '#667eea' },
+        { title: 'Dépenses du mois', value: '8.2K €', icon: '📊', color: '#4ecdc4' },
+        { title: 'Validations en attente', value: '2', icon: '✅', color: '#f9ca24' },
+        { title: 'Solde disponible', value: '125K €', icon: '💰', color: '#a55eea' },
+      ],
+    };
+    
+    return widgets[role] || widgets['TECHNICIEN'];
+  };
+
+  const widgets = getDashboardWidgets();
 
   return (
-  <>
-    <PageHeader
-      title="Tableau de bord"
-      subtitle="Aperçu global de l'infrastructure et de la flotte."
-      actions={
-        <>
-          <button type="button" className="af-btn af-btn-outline">
-            <Download size={16} />
-            Exporter Rapport
-          </button>
-          <button
-            type="button"
-            className="af-btn af-btn-primary"
-            onClick={() => navigate('/biens/nouveau')}
-          >
-            <Plus size={16} />
-            Nouvel Actif
-          </button>
-        </>
-      }
-    />
-
-    <div className="af-stats-grid">
-      <StatCard label="Utilisateurs" value={w.users} trend="+2 ↑" />
-      <StatCard
-        label="Immobilisations"
-        value={stats.total.toLocaleString('fr-FR')}
-        meta="Total actifs"
-        link={{ label: 'Voir les biens', onClick: () => navigate('/biens') }}
-      />
-      <StatCard label="Maintenances" value={String(stats.maintenance || 38)} meta="En cours" />
-      <StatCard label="Alertes" value={w.alerts} meta="Critiques" />
-    </div>
-
-    <div className="af-grid-2">
-      <div className="af-card">
-        <div className="af-card-header">
-          <h3 className="af-card-title">Alertes Critiques</h3>
-          <span className="af-badge af-badge-rejected" style={{ fontSize: 10, letterSpacing: '0.05em' }}>
-            ACTION REQUISE
-          </span>
-        </div>
-        <div style={{ padding: '16px 22px 22px' }}>
-          <div className="af-alert-item urgent">
-            <div className="af-alert-title">Serveur Rack-04 urgent</div>
-            <p className="af-alert-desc">Surchauffe détectée sur le rack principal — intervention immédiate requise.</p>
-            <button type="button" className="af-alert-action red">INTERVENIR</button>
-          </div>
-          <div className="af-alert-item warning">
-            <div className="af-alert-title">Véhicule #AB-202 retard</div>
-            <p className="af-alert-desc">Maintenance préventive dépassée de 12 jours.</p>
-            <button type="button" className="af-alert-action orange">PLANIFIER</button>
-          </div>
-          <div
-            style={{
-              marginTop: 16,
-              padding: 20,
-              borderRadius: 10,
-              background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)',
-              color: 'white',
-            }}
-          >
-            <div style={{ fontWeight: 600, marginBottom: 4 }}>Audit Annuel 2024</div>
-            <p style={{ fontSize: 13, opacity: 0.85, margin: 0 }}>Prochain audit complet dans 14 jours</p>
-          </div>
-        </div>
+    <div className="dashboard">
+      <div className="page-header">
+        <h2>{getWelcomeMessage()}, {user?.prenom} 👋</h2>
+        <p>Tableau de bord - {user?.roles?.[0] || 'Utilisateur'}</p>
       </div>
 
-      <div className="af-card">
-        <div className="af-card-header">
-          <h3 className="af-card-title">Activités Récentes</h3>
-          <Link to="/audit" style={{ fontSize: 13, color: 'var(--af-blue)', textDecoration: 'none', fontWeight: 500 }}>
-            Voir tout
-          </Link>
-        </div>
-        <div className="af-table-wrap">
-          <table className="af-table">
-            <thead>
-              <tr>
-                <th>ACTIF / ID</th>
-                <th>ACTION</th>
-                <th>UTILISATEUR</th>
-                <th>DATE</th>
-                <th>STATUT</th>
-              </tr>
-            </thead>
-            <tbody>
-              {DEMO_ACTIVITIES.map((row) => (
-                <tr key={row.asset}>
-                  <td style={{ fontWeight: 500, color: 'var(--af-navy)' }}>{row.asset}</td>
-                  <td>{row.action}</td>
-                  <td>{row.user}</td>
-                  <td style={{ color: 'var(--af-text-muted)' }}>{row.date}</td>
-                  <td>
-                    <Badge variant={row.status}>{row.label}</Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="af-table-footer">
-          <span>Affichage de 3 sur 142 activités</span>
-          <div className="af-pagination">
-            <button type="button" className="af-page-btn" disabled aria-label="Page précédente">
-              <ChevronLeft size={16} />
-            </button>
-            <button type="button" className="af-page-btn" aria-label="Page suivante">
-              <ChevronRight size={16} />
-            </button>
+      {/* Widgets KPI */}
+      <div className="dashboard-widgets">
+        {widgets.map((widget, index) => (
+          <div key={index} className="widget-card">
+            <div className="widget-icon" style={{ background: widget.color }}>
+              {widget.icon}
+            </div>
+            <div className="widget-content">
+              <span className="widget-value">{widget.value}</span>
+              <span className="widget-label">{widget.title}</span>
+            </div>
           </div>
+        ))}
+      </div>
+
+      {/* Section principale */}
+      <div className="dashboard-main">
+        <div className="info-card">
+          <h3>📋 Activités récentes</h3>
+          <p>Aucune activité récente à afficher.</p>
+        </div>
+        
+        <div className="info-card">
+          <h3>🔔 Alertes</h3>
+          <p>Aucune alerte pour le moment.</p>
         </div>
       </div>
     </div>
-
-    <button
-      type="button"
-      className="af-fab"
-      onClick={() => navigate('/biens/nouveau')}
-      aria-label="Nouvel actif"
-    >
-      <Plus size={24} />
-    </button>
-  </>
   );
 };
 
 export default Dashboard;
-
