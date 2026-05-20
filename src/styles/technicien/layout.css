@@ -1,0 +1,50 @@
+/* Shell : sidebar, header, structure — Layout.jsx uniquement */
+@import './_common.css';
+@import '../components/app-shell.css';
+
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  z-index: 50;
+}
+
+.notification-dropdown__header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.notification-dropdown__item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.8125rem;
+}
+
+.notification-dropdown__item--unread {
+  background: #f8fafc;
+}
+
+.notification-dropdown__time {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.notification-dropdown__empty {
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}

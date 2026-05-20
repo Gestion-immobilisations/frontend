@@ -41,4 +41,14 @@
   
   /* Transitions */
   --transition-speed: 150ms;
+
+  /* Layout */
+  --sidebar-width: 16rem;
+  --header-height: 4rem;
+  --content-padding: 1.5rem;
+  --border-color: #e2e8f0;
+  --color-navy: #1e293b;
+  --color-navy-dark: #0f172a;
+  --bg-sidebar-hover: #1f2937;
+  --bg-sidebar-active: #374151;
 }

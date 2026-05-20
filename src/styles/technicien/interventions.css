@@ -1,0 +1,20 @@
+/* Nouvelle intervention — DeclarationIntervention.jsx */
+@import './_common.css';
+
+.intervention-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.intervention-help h3 {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.intervention-help ul {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  padding-left: 1.25rem;
+  line-height: 1.7;
+}

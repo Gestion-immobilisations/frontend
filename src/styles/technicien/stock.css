@@ -1,0 +1,61 @@
+/* Stock, inventaire, prix marché, demandes, évaluation */
+@import './_common.css';
+
+.stock-meter {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: #e2e8f0;
+  overflow: hidden;
+  min-width: 120px;
+}
+
+.stock-meter__fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.stock-meter__fill--ok { background: #22c55e; }
+.stock-meter__fill--low { background: #eab308; }
+.stock-meter__fill--critical { background: #ef4444; }
+
+.chip-low-stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: #fef3c7;
+  color: #92400e;
+  margin-left: 0.5rem;
+}
+
+.stock-actions .btn {
+  margin-left: 0.25rem;
+}
+
+.pieces-page-header-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.search-input-narrow {
+  max-width: 280px;
+}
+
+.prix-input-narrow {
+  max-width: 120px;
+}
+
+.fiche-equipement p {
+  margin-top: 0.5rem;
+}
+
+.fiche-equipement h3 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}

@@ -1,134 +1,109 @@
-// frontend/src/components/common/Header.jsx
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, Bell, HelpCircle } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { useAuth } from '../../context/AuthContext';
-import "../../styles/components/header.css";
+import { useNotifications } from '../../context/NotificationContext';
+import { SidebarToggle } from './Sidebar';
 
-const Header = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [showMenu, setShowMenu] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
+const Header = ({
+  title = 'Tableau de bord',
+  searchPlaceholder = 'Rechercher un actif ou une intervention...',
+  onMenuToggle,
+}) => {
+  const { user } = useAuth();
+  const { notifications, unreadCount, markAllRead } = useNotifications();
+  const [search, setSearch] = useState('');
+  const [panelOpen, setPanelOpen] = useState(false);
+  const panelRef = useRef(null);
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
+  const roleLabel = user?.roles?.[0] || 'TECHNICIEN';
 
-  const toggleMenu = () => {
-    // Événement personnalisé pour ouvrir/fermer la sidebar sur mobile
-    const event = new CustomEvent('toggle-sidebar');
-    window.dispatchEvent(event);
-  };
-
-  const getRoleBadgeClass = (role) => {
-    const badges = {
-      'ADMIN': 'badge-admin',
-      'DG': 'badge-dg', 
-      'COMPTABLE': 'badge-comptable',
-      'TECHNICIEN': 'badge-technicien',
-      'CAISSE': 'badge-caisse'
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (panelRef.current && !panelRef.current.contains(e.target)) {
+        setPanelOpen(false);
+      }
     };
-    return badges[role] || 'badge-default';
-  };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  // Notifications fictives (à remplacer par un appel API)
-  const notifications = [
-    { id: 1, message: 'Nouvelle panne déclarée #4528', read: false, time: '2 min' },
-    { id: 2, message: 'Maintenance préventive dans 3 jours', read: true, time: '1h' },
-    { id: 3, message: 'Validation en attente : Achat pièces', read: false, time: '3h' }
-  ];
-  
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const togglePanel = () => {
+    if (!panelOpen) markAllRead();
+    setPanelOpen((v) => !v);
+  };
 
   return (
-    <header className="main-header">
-      {/* Logo et titre */}
-      <div className="header-left">
-        <button className="mobile-toggle" onClick={toggleMenu} aria-label="Menu">
-          <span className="hamburger"></span>
-        </button>
-        <div className="logo">
-          <span className="logo-icon">🏢</span>
-          <h1>Gestion Immobilisations</h1>
+    <header className="app-header">
+      <div className="app-header__left">
+        <SidebarToggle onClick={onMenuToggle} />
+        <h2 className="app-header__title">{title}</h2>
+      </div>
+
+      <div className="app-header__search hide-tablet">
+        <div className="app-header__search-wrap">
+          <Search aria-hidden />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={searchPlaceholder}
+            aria-label="Recherche"
+          />
         </div>
       </div>
 
-      {/* Zone droite : user + notifications */}
-      <div className="header-right">
-        {/* Notifications */}
-        <div className="notification-wrapper">
-          <button 
-            className="notification-btn" 
-            onClick={() => setShowNotifications(!showNotifications)}
+      <div className="app-header__actions">
+        <button type="button" className="app-header__icon-btn hide-mobile" aria-label="Support">
+          <HelpCircle size={18} />
+        </button>
+
+        <div ref={panelRef} className="notification-wrapper">
+          <button
+            type="button"
+            className="app-header__icon-btn"
+            onClick={togglePanel}
             aria-label="Notifications"
+            aria-expanded={panelOpen}
           >
-            <span className="notification-icon">🔔</span>
-            {unreadCount > 0 && (
-              <span className="notification-badge">{unreadCount}</span>
-            )}
+            <Bell size={20} />
+            {unreadCount > 0 && <span className="app-header__badge-dot" />}
           </button>
-          
-          {showNotifications && (
-            <div className="notification-dropdown">
-              <div className="notification-header">
-                <h4>Notifications</h4>
-                <button className="mark-all-read">Tout marquer comme lu</button>
-              </div>
-              <div className="notification-list">
-                {notifications.map((notif) => (
-                  <div key={notif.id} className={`notification-item ${!notif.read ? 'unread' : ''}`}>
-                    <p className="notification-message">{notif.message}</p>
-                    <span className="notification-time">{notif.time}</span>
+
+          {panelOpen && (
+            <div className="notification-dropdown" role="dialog" aria-label="Notifications">
+              <div className="notification-dropdown__header">Notifications</div>
+              {notifications.length === 0 ? (
+                <p className="notification-dropdown__empty">Aucune notification</p>
+              ) : (
+                notifications.slice(0, 10).map((n) => (
+                  <div
+                    key={n.id}
+                    className={`notification-dropdown__item ${!n.read ? 'notification-dropdown__item--unread' : ''}`}
+                  >
+                    <p>{n.message}</p>
+                    <p className="notification-dropdown__time">
+                      {formatDistanceToNow(new Date(n.time), { addSuffix: true, locale: fr })}
+                    </p>
                   </div>
-                ))}
-              </div>
-              <div className="notification-footer">
-                <button>Voir toutes les notifications</button>
-              </div>
+                ))
+              )}
             </div>
           )}
         </div>
 
-        {/* Menu utilisateur */}
-        <div className="user-menu">
-          <div 
-            className="user-info" 
-            onClick={() => setShowMenu(!showMenu)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && setShowMenu(!showMenu)}
-          >
-            <div className="user-avatar">
-              {user?.prenom?.charAt(0)}{user?.nom?.charAt(0)}
-            </div>
-            <div className="user-details">
-              <span className="user-name">
-                {user?.prenom} {user?.nom}
-              </span>
-              {user?.roles?.[0] && (
-                <span className={`user-role ${getRoleBadgeClass(user.roles[0])}`}>
-                  {user.roles[0]}
-                </span>
-              )}
-            </div>
-            <span className="dropdown-arrow">▼</span>
+        <div className="app-header__user">
+          <div className="app-header__avatar">
+            {user?.prenom?.charAt(0)}
+            {user?.nom?.charAt(0)}
           </div>
-
-          {showMenu && (
-            <div className="user-dropdown">
-              <button className="dropdown-item" onClick={() => navigate('/profil')}>
-                👤 Mon profil
-              </button>
-              <button className="dropdown-item" onClick={() => navigate('/parametres')}>
-                ⚙️ Paramètres
-              </button>
-              <div className="dropdown-divider"></div>
-              <button className="dropdown-item logout" onClick={handleLogout}>
-                🚪 Déconnexion
-              </button>
-            </div>
-          )}
+          <div className="app-header__user-info hide-mobile">
+            <p>
+              {user?.prenom} {user?.nom}
+            </p>
+            <p>{roleLabel}</p>
+          </div>
         </div>
       </div>
     </header>

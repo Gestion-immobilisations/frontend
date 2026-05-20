@@ -1,0 +1,164 @@
+/* Réparations et alertes — ReparationsAlertes.jsx */
+@import './_common.css';
+
+.reparations-page-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.repair-form-card {
+  margin-bottom: 1.5rem;
+}
+
+.repair-form-card h3 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.alert-card {
+  border: 1px solid var(--border-color);
+  border-left-width: 4px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  padding: 1.25rem;
+}
+
+.alert-card--critical { border-left-color: #ef4444; }
+.alert-card--warning { border-left-color: #eab308; }
+.alert-card--info { border-left-color: #f97316; }
+
+.alert-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.alert-card__time {
+  font-size: 0.625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.alert-card__title {
+  font-weight: 600;
+}
+
+.alert-card__desc {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.alert-card__action {
+  margin-top: 1rem;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.timeline__item {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.timeline__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.timeline__icon--green { background: #dcfce7; color: #16a34a; }
+.timeline__icon--blue { background: #dbeafe; color: #2563eb; }
+.timeline__icon--gray { background: #f1f5f9; color: #64748b; }
+
+.timeline__title {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.timeline__time {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.timeline__desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.mttr-card {
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-navy);
+  color: #fff;
+}
+
+.mttr-card__label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #94a3b8;
+}
+
+.mttr-card__value {
+  margin-top: 0.5rem;
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+.mttr-card__trend {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #4ade80;
+}
+
+.mttr-card__bar {
+  margin-top: 1rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.mttr-card__bar-fill {
+  height: 100%;
+  width: 75%;
+  border-radius: 9999px;
+  background: #fff;
+}
+
+.reparations-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.table-cell-title {
+  font-weight: 500;
+}
+
+.table-cell-sub {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  background: #f1f5f9;
+  color: #475569;
+  margin-right: 0.25rem;
+}

@@ -2,8 +2,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-// Contexte d'authentification
+// Contexte d'authentification et notifications
 import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 
 // Pages publiques
 import LoginPage from './pages/LoginPage';
@@ -20,6 +21,17 @@ import './styles/main.css';
 
 // Dashboard
 import Dashboard from './pages/Dashboard';
+
+// Portail Technicien
+import GestionPannes from './pages/technicien/GestionPannes';
+import GestionMaintenances from './pages/technicien/GestionMaintenances';
+import ReparationsAlertes from './pages/technicien/ReparationsAlertes';
+import DeclarationIntervention from './pages/technicien/DeclarationIntervention';
+import GestionStock from './pages/technicien/GestionStock';
+import InventairePieces from './pages/technicien/InventairePieces';
+import PrixMarchePieces from './pages/technicien/PrixMarchePieces';
+import DemandesPieces from './pages/technicien/DemandesPieces';
+import EvaluationEtat from './pages/technicien/EvaluationEtat';
 
 // ✅ Biens (IMPORTÉS et PRÊTS À L'EMPLOI)
 import ListeBiens from './components/biens/ListeBiens';
@@ -61,6 +73,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
+        <NotificationProvider>
         <Routes>
           {/* ==================== ROUTES PUBLIQUES ==================== */}
           <Route path="/login" element={<LoginPage />} />
@@ -102,32 +115,97 @@ function App() {
               } 
             />
             
-            {/*//✅ Route pour voir le détail d'un bien*/}
-              
             <Route 
-              path="/biens" 
+              path="/biens/:id" 
               element={
                 <ProtectedRoute allowedRoles={[]}>
                   <FicheBien />
                 </ProtectedRoute>
               } 
             />
-              
-            
-            
-            
-            {/* ✅ Route pour modifier un bien */}
             
             <Route 
-              path="/biens" 
+              path="/biens/:id/edit" 
               element={
                 <ProtectedRoute allowedRoles={[]}>
                   <EditBien />
                 </ProtectedRoute>
               } 
             />
-            
-            
+
+            {/* ==================== ROUTES TECHNICIEN ==================== */}
+            <Route 
+              path="/pannes" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'TECHNICIEN']}>
+                  <GestionPannes />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/pannes/declaration" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'TECHNICIEN']}>
+                  <DeclarationIntervention />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/maintenances" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'TECHNICIEN']}>
+                  <GestionMaintenances />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/reparations" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'TECHNICIEN']}>
+                  <ReparationsAlertes />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/pieces/stock" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'TECHNICIEN']}>
+                  <GestionStock />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/pieces/inventaire" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'TECHNICIEN']}>
+                  <InventairePieces />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/pieces/prix-marche" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'TECHNICIEN']}>
+                  <PrixMarchePieces />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/pieces/demandes" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'TECHNICIEN']}>
+                  <DemandesPieces />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/evaluation" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'TECHNICIEN']}>
+                  <EvaluationEtat />
+                </ProtectedRoute>
+              } 
+            />
 
             {/* ==================== ROUTES ADMIN UNIQUEMENT ==================== */}
             {/* À DÉCOMMENTER QUAND LES COMPOSANTS SERONT CRÉÉS */}
@@ -209,7 +287,7 @@ function App() {
             */}
 
             {/* ==================== ROUTES TECHNICIEN + ADMIN ==================== */}
-            {/* À DÉCOMMENTER QUAND LES COMPOSANTS SERONT CRÉÉS */}
+            {/* À DÉCOMMENTER QUAND LES COMPOSANTS SERONT CRÉÉS */} 
             {/* 
             <Route 
               path="/pannes" 
@@ -235,7 +313,7 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            */}
+           
 
             {/* ==================== ROUTES CAISSE + ADMIN ==================== */}
             {/* À DÉCOMMENTER QUAND LES COMPOSANTS SERONT CRÉÉS */}
@@ -254,6 +332,7 @@ function App() {
           {/* ==================== ROUTE 404 ==================== */}
           <Route path="*" element={<Navigate to="/unauthorized" replace />} />
         </Routes>
+        </NotificationProvider>
       </AuthProvider>
     </Router>
   );

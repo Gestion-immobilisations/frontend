@@ -1,0 +1,289 @@
+/* Pages technicien — alertes, réparations, stock */
+.alert-card {
+  border: 1px solid var(--border-color);
+  border-left-width: 4px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  padding: 1.25rem;
+}
+
+.alert-card--critical { border-left-color: #ef4444; }
+.alert-card--warning { border-left-color: #eab308; }
+.alert-card--info { border-left-color: #f97316; }
+
+.alert-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.alert-card__time {
+  font-size: 0.625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.alert-card__title {
+  font-weight: 600;
+}
+
+.alert-card__desc {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.timeline__item {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.timeline__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.timeline__icon--green { background: #dcfce7; color: #16a34a; }
+.timeline__icon--blue { background: #dbeafe; color: #2563eb; }
+.timeline__icon--gray { background: #f1f5f9; color: #64748b; }
+
+.mttr-card {
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-navy);
+  color: #fff;
+}
+
+.mttr-card__label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #94a3b8;
+}
+
+.mttr-card__value {
+  margin-top: 0.5rem;
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+.mttr-card__trend {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #4ade80;
+}
+
+.mttr-card__bar {
+  margin-top: 1rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.mttr-card__bar-fill {
+  height: 100%;
+  width: 75%;
+  border-radius: 9999px;
+  background: #fff;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.chip-low-stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.week-timeline {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.week-timeline__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.week-timeline__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.week-timeline__label--active {
+  background: var(--color-navy);
+  color: #fff;
+}
+
+.week-timeline__dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.week-timeline__dot--filled { background: var(--color-navy); }
+.week-timeline__dot--ring {
+  background: #fff;
+  box-shadow: 0 0 0 2px var(--color-navy);
+}
+.week-timeline__dot--blue { background: #3b82f6; }
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .calendar-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.calendar-day {
+  min-height: 8.75rem;
+}
+
+.calendar-day__name {
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.calendar-event {
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.calendar-event--critical { background: #111827; }
+.calendar-event--urgent { background: #991b1b; }
+.calendar-event--normal { background: #64748b; }
+
+.equipment-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.equipment-row__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-lg);
+  background: #f1f5f9;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.equipment-row__name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.equipment-row__ref {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.status-chip {
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-md);
+  font-size: 0.625rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.status-chip--critical { background: #fee2e2; color: #b91c1c; }
+.status-chip--stable { background: #dbeafe; color: #1d4ed8; }
+.status-chip--maintenance { background: #f1f5f9; color: #475569; }
+
+.report-card {
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-navy);
+  color: #fff;
+}
+
+.report-card p {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #cbd5e1;
+}
+
+.report-card .btn {
+  margin-top: 1rem;
+  background: #fff;
+  color: var(--color-navy);
+  font-weight: 600;
+}
+
+.report-card .btn:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.stock-meter {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.stock-meter__fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.stock-meter__fill--ok { background: #22c55e; }
+.stock-meter__fill--low { background: #eab308; }
+.stock-meter__fill--critical { background: #ef4444; }

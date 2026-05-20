@@ -1,0 +1,4 @@
+/* Styles partagés du portail technicien (importé via chaque fichier page) */
+@import '../variables.css';
+@import '../components/forms.css';
+@import '../components/ui.css';
