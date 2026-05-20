@@ -1,0 +1,128 @@
+.af-settings__layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+}
+
+.af-settings__form-card {
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.af-settings__form-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.af-form-field {
+  margin-bottom: 18px;
+}
+
+.af-form-field label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--af-text);
+  margin-bottom: 8px;
+}
+
+.af-form-field input,
+.af-form-field textarea,
+.af-form-field select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--af-border);
+  border-radius: var(--af-radius);
+  font-size: 0.875rem;
+  font-family: var(--font-family-base);
+  background: #f8fafc;
+  color: var(--af-text);
+}
+
+.af-form-field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.af-security-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  background: var(--af-bg);
+  border-radius: var(--af-radius);
+  margin-bottom: 12px;
+}
+
+.af-security-row:last-child {
+  margin-bottom: 0;
+}
+
+.af-settings-sidebar__actions {
+  padding: 24px;
+  background: linear-gradient(135deg, #0a1128, #1e3a5f);
+  border-radius: var(--af-radius-lg);
+  margin-bottom: 20px;
+}
+
+.af-settings-sidebar__actions .af-btn {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.af-settings-sidebar__actions .af-btn-primary {
+  background: #fff;
+  color: var(--af-navy);
+  border-color: #fff;
+}
+
+.af-settings-sidebar__actions .af-btn-secondary {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.af-notif-pref {
+  padding: 20px;
+}
+
+.af-notif-pref__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--af-border);
+}
+
+.af-notif-pref__row:last-child {
+  border-bottom: none;
+}
+
+.af-help-card {
+  padding: 24px;
+  border-radius: var(--af-radius-lg);
+  background: linear-gradient(135deg, rgba(10, 17, 40, 0.9), rgba(30, 58, 95, 0.85)),
+    url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80') center/cover;
+  color: #fff;
+  min-height: 120px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.af-help-card p {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 1000px) {
+  .af-settings__layout {
+    grid-template-columns: 1fr;
+  }
+}

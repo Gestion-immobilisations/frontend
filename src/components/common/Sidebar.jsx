@@ -1,268 +1,242 @@
-// frontend/src/components/common/Sidebar.jsx
-import React, { useState, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import "../../styles/components/sidebar.css";
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
+import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import BuildOutlinedIcon from '@mui/icons-material/BuildOutlined';
+import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import GridViewIcon from '@mui/icons-material/GridView';
+import MenuIcon from '@mui/icons-material/Menu';
+import '../../styles/components/sidebar.css';
 
-const Sidebar = () => {
-  const { user, hasRole, hasAnyRole } = useAuth();
+const Sidebar = ({ isOpen, onClose }) => {
+  const { user, logout, hasAnyRole } = useAuth();
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(window.innerWidth >= 1024);
-  const [activeSubmenu, setActiveSubmenu] = useState(null);
+  const navigate = useNavigate();
+  const [expanded, setExpanded] = useState({});
 
-  // ✅ Fonction intelligente pour vérifier les rôles (insensible à la casse et aux espaces)
   const hasRequiredRole = (roles) => {
-    if (!roles || roles.length === 0) return true;
-    if (!user || !user.roles) return false;
-    
-    // Normaliser les rôles de l'utilisateur
-    let userRoles = [];
-    if (Array.isArray(user.roles)) {
-      userRoles = user.roles;
-    } else if (typeof user.roles === 'string') {
-      userRoles = [user.roles];
-    } else if (user.role) {
-      userRoles = [user.role];
-    }
-    
-    // Normaliser : trim + uppercase
-    userRoles = userRoles.map(r => String(r).trim().toUpperCase());
-    
-    // Vérifier si au moins un rôle correspond
-    return roles.some(requiredRole => {
-      const normalizedRequired = String(requiredRole).trim().toUpperCase();
-      return userRoles.includes(normalizedRequired);
-    });
+    if (!roles?.length) return true;
+    return hasAnyRole(roles);
   };
 
-  // Gestion de l'ouverture/fermeture sur mobile
-  useEffect(() => {
-    const handleToggle = () => setIsOpen(prev => !prev);
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setIsOpen(true);
-      } else {
-        setIsOpen(false);
-      }
-    };
+  const primaryNav = [
+    { title: 'Dashboard', path: '/dashboard', icon: DashboardOutlinedIcon, roles: [] },
+    { title: 'Users', path: '/utilisateurs', icon: PeopleOutlineIcon, roles: ['ADMIN'] },
+    { title: 'Roles', path: '/roles', icon: ShieldOutlinedIcon, roles: ['ADMIN'] },
+    { title: 'Audit', path: '/audit', icon: HistoryOutlinedIcon, roles: ['ADMIN', 'DG'] },
+    { title: 'Settings', path: '/parametres', icon: SettingsOutlinedIcon, roles: ['ADMIN'] },
+  ];
 
-    window.addEventListener('toggle-sidebar', handleToggle);
-    window.addEventListener('resize', handleResize);
-    
-    return () => {
-      window.removeEventListener('toggle-sidebar', handleToggle);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  // Fermer le menu sur mobile après un clic
-  const handleNavClick = () => {
-    if (window.innerWidth < 1024) {
-      setIsOpen(false);
-    }
-  };
-
-  // Menu items avec permissions par rôle
-  const menuItems = [
-    {
-      title: 'Tableau de bord',
-      path: '/dashboard',
-      icon: '📊',
-      roles: ['ADMIN', 'DG', 'COMPTABLE', 'TECHNICIEN', 'CAISSE'],
-    },
-    {
-      title: 'Utilisateurs',
-      path: '/utilisateurs',
-      icon: '👥',
-      roles: ['ADMIN'],
-    },
+  const operationsNav = [
     {
       title: 'Biens',
-      icon: '🏷️',
+      icon: Inventory2OutlinedIcon,
       roles: ['ADMIN', 'DG', 'COMPTABLE', 'TECHNICIEN'],
       children: [
         { title: 'Tous les biens', path: '/biens', roles: ['ADMIN', 'DG', 'COMPTABLE', 'TECHNICIEN'] },
-        {title: 'Save Biens', path: '/biens/nouveau', roles: ['ADMIN']},
-        {title: 'voir bien', path: '/biens', roles: ['ADMIN']},
-        {title: 'modifier bien', path: '/biens', roles: ['ADMIN']},
-        { title: 'Véhicules', path: '/biens/vehicules', roles: ['ADMIN', 'DG', 'COMPTABLE', 'TECHNICIEN'] },
-        { title: 'Machines', path: '/biens/machines', roles: ['ADMIN', 'DG', 'COMPTABLE', 'TECHNICIEN'] },
-        { title: 'Ordinateurs', path: '/biens/ordinateurs', roles: ['ADMIN', 'DG', 'COMPTABLE', 'TECHNICIEN'] },
-      ]
+        { title: 'Nouveau bien', path: '/biens/nouveau', roles: ['ADMIN'] },
+      ],
     },
+    { title: 'Pannes', path: '/pannes', icon: BuildOutlinedIcon, roles: ['ADMIN', 'TECHNICIEN', 'DG'] },
+    { title: 'Maintenances', path: '/maintenances', icon: BuildOutlinedIcon, roles: ['ADMIN', 'TECHNICIEN', 'DG'] },
+    { title: 'Pièces', path: '/pieces', icon: Inventory2OutlinedIcon, roles: ['ADMIN', 'TECHNICIEN', 'COMPTABLE', 'MAGASINIER'] },
     {
-      title: 'Pannes',
-      path: '/pannes',
-      icon: '⚠️',
-      roles: ['ADMIN', 'TECHNICIEN', 'DG'],
-    },
-    {
-      title: 'Maintenances',
-      path: '/maintenances',
-      icon: '🔧',
-      roles: ['ADMIN', 'TECHNICIEN', 'DG'],
-    },
-    {
-      title: 'Amortissements',
-      path: '/amortissements',
-      icon: '📈',
-      roles: ['ADMIN', 'COMPTABLE', 'DG'],
-    },
-    {
-      title: 'Validations',
-      path: '/validations',
-      icon: '✅',
-      roles: ['ADMIN', 'DG', 'COMPTABLE'],
-    },
-    {
-      title: 'Pièces',
-      path: '/pieces',
-      icon: '🔩',
-      roles: ['ADMIN', 'TECHNICIEN', 'COMPTABLE'],
+      title: 'Gestion des stocks',
+      icon: Inventory2OutlinedIcon,
+      roles: ['MAGASINIER', 'ADMIN'],
+      children: [
+        { title: 'Aperçu', path: '/stock/apercu', roles: ['MAGASINIER', 'ADMIN'] },
+        { title: 'Entrées', path: '/stock/entrees', roles: ['MAGASINIER', 'ADMIN'] },
+        { title: 'Sorties', path: '/stock/sorties', roles: ['MAGASINIER', 'ADMIN'] },
+        { title: 'Mouvements', path: '/stock/mouvements', roles: ['MAGASINIER', 'ADMIN'] },
+        { title: 'Inventaire', path: '/stock/inventaire', roles: ['MAGASINIER', 'ADMIN'] },
+        { title: 'Alertes', path: '/stock/alertes', roles: ['MAGASINIER', 'ADMIN'] },
+      ],
     },
     {
       title: 'Rapports',
-      path: '/rapports',
-      icon: '📑',
-      roles: ['ADMIN', 'DG', 'COMPTABLE'],
+      icon: AssessmentOutlinedIcon,
+      roles: ['ADMIN', 'DG', 'COMPTABLE', 'MAGASINIER'],
+      children: [
+        { title: 'Rapports généraux', path: '/rapports', roles: ['ADMIN', 'DG', 'COMPTABLE'] },
+        { title: 'Stock', path: '/rapports/stock', roles: ['ADMIN', 'DG', 'COMPTABLE', 'MAGASINIER'] },
+        { title: 'Mouvements', path: '/rapports/mouvements', roles: ['ADMIN', 'DG', 'MAGASINIER'] },
+        { title: 'Valeur stock', path: '/rapports/valeur-stock', roles: ['ADMIN', 'DG', 'COMPTABLE', 'MAGASINIER'] },
+      ],
     },
     {
-      title: 'Audit',
-      path: '/audit',
-      icon: '🔍',
-      roles: ['ADMIN', 'DG'],
-    },
-    {
-      title: 'Paramètres',
-      path: '/parametres',
-      icon: '⚙️',
-      roles: ['ADMIN'],
+      title: 'Paramètres stock',
+      icon: SettingsOutlinedIcon,
+      roles: ['ADMIN', 'MAGASINIER'],
+      children: [
+        { title: 'Stock', path: '/parametres/stock', roles: ['ADMIN', 'MAGASINIER'] },
+        { title: 'Unités', path: '/parametres/unites', roles: ['ADMIN', 'MAGASINIER'] },
+        { title: 'Emplacements', path: '/parametres/emplacements', roles: ['ADMIN', 'MAGASINIER'] },
+      ],
     },
   ];
 
-  // ✅ Fonction de filtrage CORRIGÉE
-  const filterByRole = (item) => {
-    if (!item.roles || item.roles.length === 0) return true;
-    if (!user) return false;
-    
-    // Utiliser la fonction intelligente
-    const hasAccess = hasRequiredRole(item.roles);
-    
-    // Debug (à supprimer en production)
-    if (item.title === 'Utilisateurs') {
-      console.log(`🔍 Sidebar - ${item.title}:`, { 
-        requiredRoles: item.roles, 
-        userRoles: user.roles,
-        hasAccess 
-      });
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
+  const toggleExpand = (key) => {
+    setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const isActive = (path) =>
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
+
+  const renderLink = (item, key) => {
+    const Icon = item.icon;
+    if (item.children) {
+      const visibleChildren = item.children.filter((c) => hasRequiredRole(c.roles));
+      if (!visibleChildren.length || !hasRequiredRole(item.roles)) return null;
+      const isOpen = expanded[key] || visibleChildren.some((c) => isActive(c.path));
+
+      return (
+        <div key={key}>
+          <button
+            type="button"
+            className={`af-sidebar__link ${isOpen ? 'af-sidebar__link--active' : ''}`}
+            onClick={() => toggleExpand(key)}
+          >
+            {Icon && <Icon fontSize="small" />}
+            <span>{item.title}</span>
+          </button>
+          {isOpen && (
+            <div className="af-sidebar__submenu">
+              {visibleChildren.map((child) => (
+                <NavLink
+                  key={child.path}
+                  to={child.path}
+                  className={({ isActive: active }) =>
+                    `af-sidebar__sublink ${active ? 'af-sidebar__sublink--active' : ''}`
+                  }
+                  onClick={onClose}
+                >
+                  {child.title}
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </div>
+      );
     }
-    
-    return hasAccess;
-  };
 
-  const toggleSubmenu = (index) => {
-    setActiveSubmenu(activeSubmenu === index ? null : index);
-  };
+    if (!hasRequiredRole(item.roles)) return null;
 
-  const isActive = (path) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
-  };
-
-  if (!isOpen) {
     return (
-      <aside className="sidebar sidebar-collapsed">
-        <button className="sidebar-toggle" onClick={() => setIsOpen(true)}>
-          ☰
-        </button>
-        <nav className="sidebar-nav">
-          {menuItems.filter(filterByRole).map((item, index) => (
-            item.path ? (
-              <NavLink
-                key={index}
-                to={item.path}
-                className="nav-icon-only"
-                title={item.title}
-                onClick={handleNavClick}
-              >
-                <span className="nav-icon">{item.icon}</span>
-              </NavLink>
-            ) : (
-              <div key={index} className="nav-icon-only" title={item.title}>
-                <span className="nav-icon">{item.icon}</span>
-              </div>
-            )
-          ))}
-        </nav>
-      </aside>
+      <NavLink
+        key={item.path}
+        to={item.path}
+        className={({ isActive: active }) =>
+          `af-sidebar__link ${active ? 'af-sidebar__link--active' : ''}`
+        }
+        onClick={onClose}
+      >
+        {Icon && <Icon fontSize="small" />}
+        <span>{item.title}</span>
+      </NavLink>
     );
-  }
+  };
 
   return (
     <>
-      {/* Overlay pour mobile */}
-      {window.innerWidth < 1024 && isOpen && (
-        <div className="sidebar-overlay" onClick={() => setIsOpen(false)}></div>
-      )}
-      
-      <aside className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
-        <button className="sidebar-close" onClick={() => setIsOpen(false)}>
-          ✕
-        </button>
-        
-        <nav className="sidebar-nav">
-          {menuItems.filter(filterByRole).map((item, index) => {
-            if (item.children) {
-              const hasActiveChild = item.children.some(child => 
-                filterByRole(child) && isActive(child.path)
-              );
-              const isSubmenuOpen = activeSubmenu === index || hasActiveChild;
+      <div
+        className={`af-sidebar-overlay ${isOpen ? 'af-sidebar-overlay--visible' : ''}`}
+        onClick={onClose}
+        aria-hidden={!isOpen}
+      />
+      <aside className={`af-sidebar ${isOpen ? 'af-sidebar--open' : ''}`}>
+        <div className="af-sidebar__brand">
+          <div className="af-sidebar__logo-icon">
+            <GridViewIcon fontSize="small" />
+          </div>
+          <div className="af-sidebar__logo-text">
+            <h2>AssetFlow</h2>
+            <span>Enterprise Management</span>
+          </div>
+        </div>
 
+        <nav className="af-sidebar__nav">
+          {primaryNav
+            .filter((item) => hasRequiredRole(item.roles))
+            .map((item) => {
+              const Icon = item.icon;
               return (
-                <div key={index} className="menu-item has-children">
-                  <div 
-                    className={`menu-title ${isSubmenuOpen ? 'open' : ''}`}
-                    onClick={() => toggleSubmenu(index)}
-                  >
-                    <span className="menu-icon">{item.icon}</span>
-                    <span className="menu-text">{item.title}</span>
-                    <span className="menu-arrow">{isSubmenuOpen ? '▼' : '▶'}</span>
-                  </div>
-                  {isSubmenuOpen && (
-                    <div className="submenu">
-                      {item.children.filter(filterByRole).map((child, childIndex) => (
-                        <NavLink
-                          key={childIndex}
-                          to={child.path}
-                          className={({ isActive }) => 
-                            `submenu-item ${isActive ? 'active' : ''}`
-                          }
-                          onClick={handleNavClick}
-                        >
-                          {child.title}
-                        </NavLink>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive: active }) =>
+                    `af-sidebar__link ${active ? 'af-sidebar__link--active' : ''}`
+                  }
+                  onClick={onClose}
+                >
+                  <Icon fontSize="small" />
+                  <span>{item.title}</span>
+                </NavLink>
               );
-            }
+            })}
 
-            return (
-              <NavLink
-                key={index}
-                to={item.path}
-                className={({ isActive }) => 
-                  `menu-item ${isActive ? 'active' : ''}`
-                }
-                onClick={handleNavClick}
-              >
-                <span className="menu-icon">{item.icon}</span>
-                <span className="menu-text">{item.title}</span>
-              </NavLink>
-            );
-          })}
+          {operationsNav.some((item) => hasRequiredRole(item.roles)) && (
+            <>
+              <div className="af-sidebar__section-label">Opérations</div>
+              {operationsNav.map((item, i) => renderLink(item, `op-${i}`))}
+            </>
+          )}
         </nav>
+
+        {hasAnyRole(['ADMIN', 'DG']) && (
+          <div className="af-sidebar__compliance">
+            <p className="af-sidebar__compliance-title">Système Sécurisé</p>
+            <div className="af-sidebar__compliance-bar">
+              <div className="af-sidebar__compliance-fill" style={{ width: '94%' }} />
+            </div>
+            <span className="af-sidebar__compliance-meta">Conformité Audit: 94%</span>
+          </div>
+        )}
+
+        <div className="af-sidebar__footer">
+          <div className="af-sidebar__user">
+            <div className="af-avatar">
+              {user?.prenom?.charAt(0)}
+              {user?.nom?.charAt(0)}
+            </div>
+            <div className="af-sidebar__user-info">
+              <span className="af-sidebar__user-name">
+                {user?.prenom} {user?.nom}
+              </span>
+              <span className="af-sidebar__user-email">{user?.email || 'admin@assetflow.com'}</span>
+            </div>
+            <button
+              type="button"
+              className="af-sidebar__logout"
+              onClick={handleLogout}
+              aria-label="Déconnexion"
+            >
+              <LogoutOutlinedIcon fontSize="small" />
+            </button>
+          </div>
+        </div>
       </aside>
+
+      <button
+        type="button"
+        className="af-sidebar-toggle"
+        onClick={() => window.dispatchEvent(new CustomEvent('toggle-sidebar-mobile'))}
+        aria-label="Menu"
+        style={{ display: 'none' }}
+      >
+        <MenuIcon />
+      </button>
     </>
   );
 };

@@ -1,12 +1,16 @@
 /* frontend/src/styles/main.css */
 
-/* === Imports des styles des composants === */
-@import './../styles/components/header.css';
-@import './../styles/components/layout.css';
-@import './../styles/components/sidebar.css';
-@import './../styles/pages/dashboard.css';
-/*@import './pages/login.css';*/
-@import './../styles/unauthorized.css';
+@import './variables.css';
+@import './assetflow.css';
+@import './components/header.css';
+@import './components/layout.css';
+@import './components/sidebar.css';
+@import './pages/dashboard.css';
+@import './pages/utilisateurs.css';
+@import './pages/roles.css';
+@import './pages/audit.css';
+@import './pages/parametres.css';
+@import './unauthorized.css';
 
 /* === Reset et base === */
 * {
@@ -21,9 +25,9 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  background: #f7fafc;
-  color: #2d3748;
+  font-family: var(--font-family-base);
+  background: var(--af-bg);
+  color: var(--af-text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

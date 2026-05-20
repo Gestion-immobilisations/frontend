@@ -1,17 +1,18 @@
-// frontend/src/components/common/Layout.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
-import  "../../styles/components/layout.css";
+import '../../styles/components/layout.css';
 
 const Layout = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="app-layout">
-      <Header />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="app-body">
-        <Sidebar />
         <main className="app-content">
+          <Header onMenuClick={() => setSidebarOpen(true)} />
           <Outlet />
         </main>
       </div>

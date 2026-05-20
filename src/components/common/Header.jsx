@@ -1,131 +1,112 @@
-// frontend/src/components/common/Header.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import "../../styles/components/header.css";
+import SearchIcon from '@mui/icons-material/Search';
+import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import MenuIcon from '@mui/icons-material/Menu';
+import '../../styles/components/header.css';
 
-const Header = () => {
+const SEARCH_PLACEHOLDERS = {
+  '/dashboard': 'Rechercher un actif, un utilisateur...',
+  '/utilisateurs': 'Rechercher un utilisateur, un rôle...',
+  '/roles': 'Rechercher des rôles ou permissions...',
+  '/audit': 'Rechercher une action, un utilisateur ou un ID...',
+  '/parametres': 'Rechercher des paramètres...',
+};
+
+const Header = ({ onMenuClick }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showMenu, setShowMenu] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const placeholder =
+    Object.entries(SEARCH_PLACEHOLDERS).find(([path]) => location.pathname.startsWith(path))?.[1] ||
+    'Rechercher...';
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
   };
 
-  const toggleMenu = () => {
-    // Événement personnalisé pour ouvrir/fermer la sidebar sur mobile
-    const event = new CustomEvent('toggle-sidebar');
-    window.dispatchEvent(event);
-  };
-
-  const getRoleBadgeClass = (role) => {
-    const badges = {
-      'ADMIN': 'badge-admin',
-      'DG': 'badge-dg', 
-      'COMPTABLE': 'badge-comptable',
-      'TECHNICIEN': 'badge-technicien',
-      'CAISSE': 'badge-caisse'
-    };
-    return badges[role] || 'badge-default';
-  };
-
-  // Notifications fictives (à remplacer par un appel API)
-  const notifications = [
-    { id: 1, message: 'Nouvelle panne déclarée #4528', read: false, time: '2 min' },
-    { id: 2, message: 'Maintenance préventive dans 3 jours', read: true, time: '1h' },
-    { id: 3, message: 'Validation en attente : Achat pièces', read: false, time: '3h' }
-  ];
-  
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const roleLabel = user?.roles?.[0] || 'Utilisateur';
+  const displayRole =
+    roleLabel === 'ADMIN'
+      ? 'Administrator'
+      : roleLabel.charAt(0) + roleLabel.slice(1).toLowerCase();
 
   return (
-    <header className="main-header">
-      {/* Logo et titre */}
-      <div className="header-left">
-        <button className="mobile-toggle" onClick={toggleMenu} aria-label="Menu">
-          <span className="hamburger"></span>
-        </button>
-        <div className="logo">
-          <span className="logo-icon">🏢</span>
-          <h1>Gestion Immobilisations</h1>
+    <header className="af-topbar">
+      <button
+        type="button"
+        className="af-topbar__menu-btn"
+        onClick={onMenuClick}
+        aria-label="Ouvrir le menu"
+      >
+        <MenuIcon fontSize="small" />
+      </button>
+
+      <span className="af-topbar__brand-mobile">AssetFlow</span>
+
+      <div className="af-topbar__search-wrap">
+        <div className="af-search">
+          <SearchIcon sx={{ fontSize: 20, color: '#94a3b8' }} />
+          <input
+            type="search"
+            placeholder={placeholder}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Recherche"
+          />
         </div>
       </div>
 
-      {/* Zone droite : user + notifications */}
-      <div className="header-right">
-        {/* Notifications */}
-        <div className="notification-wrapper">
-          <button 
-            className="notification-btn" 
-            onClick={() => setShowNotifications(!showNotifications)}
-            aria-label="Notifications"
-          >
-            <span className="notification-icon">🔔</span>
-            {unreadCount > 0 && (
-              <span className="notification-badge">{unreadCount}</span>
-            )}
-          </button>
-          
-          {showNotifications && (
-            <div className="notification-dropdown">
-              <div className="notification-header">
-                <h4>Notifications</h4>
-                <button className="mark-all-read">Tout marquer comme lu</button>
-              </div>
-              <div className="notification-list">
-                {notifications.map((notif) => (
-                  <div key={notif.id} className={`notification-item ${!notif.read ? 'unread' : ''}`}>
-                    <p className="notification-message">{notif.message}</p>
-                    <span className="notification-time">{notif.time}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="notification-footer">
-                <button>Voir toutes les notifications</button>
-              </div>
-            </div>
-          )}
-        </div>
+      <div className="af-topbar__actions">
+        <button type="button" className="af-topbar__icon-btn" aria-label="Notifications">
+          <NotificationsOutlinedIcon fontSize="small" />
+          <span className="af-topbar__notif-dot" />
+        </button>
+        <button type="button" className="af-topbar__icon-btn" aria-label="Aide">
+          <HelpOutlineIcon fontSize="small" />
+        </button>
 
-        {/* Menu utilisateur */}
-        <div className="user-menu">
-          <div 
-            className="user-info" 
-            onClick={() => setShowMenu(!showMenu)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && setShowMenu(!showMenu)}
-          >
-            <div className="user-avatar">
-              {user?.prenom?.charAt(0)}{user?.nom?.charAt(0)}
-            </div>
-            <div className="user-details">
-              <span className="user-name">
-                {user?.prenom} {user?.nom}
-              </span>
-              {user?.roles?.[0] && (
-                <span className={`user-role ${getRoleBadgeClass(user.roles[0])}`}>
-                  {user.roles[0]}
-                </span>
-              )}
-            </div>
-            <span className="dropdown-arrow">▼</span>
+        <div
+          className="af-topbar__user"
+          onClick={() => setShowMenu(!showMenu)}
+          onKeyDown={(e) => e.key === 'Enter' && setShowMenu(!showMenu)}
+          role="button"
+          tabIndex={0}
+        >
+          <div className="af-topbar__user-photo">
+            {user?.prenom?.charAt(0)}
+            {user?.nom?.charAt(0)}
           </div>
-
+          <div className="af-topbar__user-info">
+            <span className="af-topbar__user-name">
+              {user?.prenom} {user?.nom}
+            </span>
+            <span className="af-topbar__user-role">{displayRole}</span>
+          </div>
           {showMenu && (
-            <div className="user-dropdown">
-              <button className="dropdown-item" onClick={() => navigate('/profil')}>
-                👤 Mon profil
+            <div className="af-topbar__dropdown" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                className="af-topbar__dropdown-item"
+                onClick={() => {
+                  setShowMenu(false);
+                  navigate('/parametres');
+                }}
+              >
+                Paramètres
               </button>
-              <button className="dropdown-item" onClick={() => navigate('/parametres')}>
-                ⚙️ Paramètres
-              </button>
-              <div className="dropdown-divider"></div>
-              <button className="dropdown-item logout" onClick={handleLogout}>
-                🚪 Déconnexion
+              <button
+                type="button"
+                className="af-topbar__dropdown-item af-topbar__dropdown-item--danger"
+                onClick={handleLogout}
+              >
+                Déconnexion
               </button>
             </div>
           )}

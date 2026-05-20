@@ -1,44 +1,43 @@
-/* 
-  variables.css 
-  Variables globales du projet Gestion Immobilisation
-*/
-
+/* AssetFlow — design tokens */
 :root {
-  /* Couleurs principales */
-  --color-primary: #2563eb;       /* blue-600 */
-  --color-primary-hover: #1d4ed8; /* blue-700 */
-  --color-secondary: #475569;     /* slate-600 */
-  
-  /* Arrière-plans */
-  --bg-main: #f8fafc;        /* slate-50 */
-  --bg-card: #ffffff;        /* white */
-  --bg-sidebar: #111827;     /* gray-900 */
-  
-  /* Textes */
-  --text-primary: #1e293b;   /* slate-800 */
-  --text-secondary: #64748b; /* slate-500 */
-  --text-light: #f8fafc;     /* slate-50 */
-  
-  /* Statuts et Alertes */
-  --color-success: #16a34a;  /* green-600 */
-  --bg-success: #f0fdf4;     /* green-50 */
-  --color-warning: #eab308;  /* yellow-500 */
-  --bg-warning: #fefce8;     /* yellow-50 */
-  --color-error: #dc2626;    /* red-600 */
-  --bg-error: #fef2f2;       /* red-50 */
-  --color-info: #0ea5e9;     /* sky-500 */
-  --bg-info: #f0f9ff;        /* sky-50 */
+  --af-navy: #0a1128;
+  --af-navy-mid: #1a2744;
+  --af-primary: #1e3a5f;
+  --af-primary-hover: #152d4a;
+  --af-accent: #3b82f6;
+  --af-accent-light: #dbeafe;
+  --af-accent-bg: #eff6ff;
 
-  /* Typographie */
+  --af-bg: #f4f6f9;
+  --af-bg-card: #ffffff;
+  --af-sidebar-bg: #ffffff;
+  --af-border: #e8ecf1;
+  --af-border-strong: #d1d9e6;
+
+  --af-text: #0f172a;
+  --af-text-secondary: #64748b;
+  --af-text-muted: #94a3b8;
+
+  --af-success: #16a34a;
+  --af-success-bg: #dcfce7;
+  --af-success-text: #166534;
+  --af-warning: #ea580c;
+  --af-warning-bg: #ffedd5;
+  --af-warning-text: #9a3412;
+  --af-danger: #dc2626;
+  --af-danger-bg: #fee2e2;
+  --af-danger-text: #991b1b;
+  --af-info: #2563eb;
+  --af-info-bg: #dbeafe;
+  --af-info-text: #1e40af;
+
+  --af-sidebar-width: 240px;
+  --af-header-height: 64px;
+  --af-radius: 10px;
+  --af-radius-lg: 12px;
+  --af-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --af-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+
   --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
-  
-  /* Radius & Shadows */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  
-  /* Transitions */
   --transition-speed: 150ms;
 }

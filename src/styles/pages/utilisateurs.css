@@ -1,0 +1,81 @@
+.af-users__tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--af-bg);
+  border-radius: var(--af-radius);
+  margin-bottom: 20px;
+  width: fit-content;
+}
+
+.af-users__tab {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--af-text-secondary);
+  cursor: pointer;
+  font-family: var(--font-family-base);
+}
+
+.af-users__tab--active {
+  background: var(--af-bg-card);
+  color: var(--af-text);
+  font-weight: 600;
+  box-shadow: var(--af-shadow);
+}
+
+.af-users__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--af-border);
+}
+
+.af-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.af-user-cell__email {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--af-text-muted);
+  font-weight: 400;
+}
+
+.af-users__pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-top: 1px solid var(--af-border);
+  font-size: 0.8125rem;
+  color: var(--af-text-muted);
+}
+
+.af-pagination__pages {
+  display: flex;
+  gap: 4px;
+}
+
+.af-pagination__page {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--af-border);
+  border-radius: 8px;
+  background: var(--af-bg-card);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-family: var(--font-family-base);
+}
+
+.af-pagination__page--active {
+  background: var(--af-navy);
+  color: #fff;
+  border-color: var(--af-navy);
+}
