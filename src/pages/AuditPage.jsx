@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../components/ui/PageHeader';
 import Fab from '../components/ui/Fab';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -8,70 +8,154 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CloudSyncOutlinedIcon from '@mui/icons-material/CloudSyncOutlined';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
+import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
+import auditService from '../services/auditService';
+import utilisateurService from '../services/utilisateurService';
+import { formatDateTime } from '../utils/formatters';
 import '../styles/pages/audit.css';
 
-const AUDIT_ENTRIES = [
-  {
-    id: 1,
-    time: '14:42 AUJ.',
-    title: 'Asset supprimé',
-    description: 'Le serveur de production a été retiré de l\'inventaire.',
-    entityId: '#SRV-PROD-01',
-    module: 'Gestion d\'actifs',
-    color: 'var(--af-danger)',
-    icon: DeleteOutlineIcon,
-    iconBg: 'var(--af-danger-bg)',
-  },
-  {
-    id: 2,
-    time: '12:15 AUJ.',
-    title: 'Profil mis à jour',
-    description: 'Modification des permissions pour l\'utilisateur Marie Martin.',
-    entityId: '#USR-2847',
-    module: 'Utilisateurs',
-    color: 'var(--af-info)',
-    icon: EditOutlinedIcon,
-    iconBg: 'var(--af-info-bg)',
-  },
-  {
-    id: 3,
-    time: 'Hier 18:50',
-    title: 'Réinitialisation forcée',
-    description: 'Mot de passe réinitialisé par l\'administrateur système.',
-    entityId: '#USR-1092',
-    module: 'Sécurité',
-    color: 'var(--af-warning)',
-    icon: RestartAltOutlinedIcon,
-    iconBg: 'var(--af-warning-bg)',
-  },
-  {
-    id: 4,
-    time: 'Hier 14:22',
-    title: 'Nouvel Asset créé',
-    description: 'MacBook Pro M2 ajouté à l\'inventaire du département IT.',
-    entityId: '#AST-MC-84',
-    module: 'Gestion d\'actifs',
+const ACTION_META = {
+  CREATE: {
+    title: 'Création',
     color: 'var(--af-success)',
     icon: AddCircleOutlineIcon,
     iconBg: 'var(--af-success-bg)',
   },
-  {
-    id: 5,
-    time: 'Hier 09:00',
-    title: 'Synchronisation cloud',
-    description: 'Synchronisation automatique des données terminée avec succès.',
-    entityId: '#SYNC-2024',
-    module: 'Système',
+  UPDATE: {
+    title: 'Mise à jour',
+    color: 'var(--af-info)',
+    icon: EditOutlinedIcon,
+    iconBg: 'var(--af-info-bg)',
+  },
+  DELETE: {
+    title: 'Suppression',
+    color: 'var(--af-danger)',
+    icon: DeleteOutlineIcon,
+    iconBg: 'var(--af-danger-bg)',
+  },
+  LOGIN: {
+    title: 'Connexion',
     color: 'var(--af-navy)',
     icon: CloudSyncOutlinedIcon,
     iconBg: 'var(--af-accent-bg)',
   },
-];
+  LOGOUT: {
+    title: 'Déconnexion',
+    color: 'var(--af-warning)',
+    icon: RestartAltOutlinedIcon,
+    iconBg: 'var(--af-warning-bg)',
+  },
+};
+
+const MODULE_LABELS = {
+  utilisateurs: "Utilisateurs",
+  biens: "Gestion d'actifs",
+  auth: 'Sécurité',
+};
+
+function mapEntry(entry) {
+  const meta = ACTION_META[entry.action] || {
+    title: entry.action,
+    color: 'var(--af-navy)',
+    icon: HistoryOutlinedIcon,
+    iconBg: 'var(--af-accent-bg)',
+  };
+  const moduleKey = (entry.table_concernee || '').toLowerCase();
+
+  return {
+    id: entry.id,
+    time: entry.date_action ? formatDateTime(entry.date_action) : '—',
+    title: `${meta.title} — ${entry.table_concernee || 'système'}`,
+    description: entry.nouvelles_valeurs
+      ? JSON.stringify(entry.nouvelles_valeurs).slice(0, 120)
+      : entry.anciennes_valeurs
+        ? JSON.stringify(entry.anciennes_valeurs).slice(0, 120)
+        : '—',
+    entityId: entry.id_enregistrement ? `#${entry.id_enregistrement}` : '—',
+    module: MODULE_LABELS[moduleKey] || entry.table_concernee || '—',
+    moduleKey,
+    userId: entry.id_utilisateur,
+    userName: entry.utilisateur_nom,
+    color: meta.color,
+    icon: meta.icon,
+    iconBg: meta.iconBg,
+    action: entry.action,
+  };
+}
 
 const AuditPage = () => {
   const [dateFilter, setDateFilter] = useState('24h');
   const [moduleFilter, setModuleFilter] = useState('all');
   const [userFilter, setUserFilter] = useState('all');
+  const [entries, setEntries] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const [journal, summaryData, usersData] = await Promise.all([
+          auditService.getJournal({ skip: 0, limit: 100 }),
+          auditService.getSummary(),
+          utilisateurService.getAll({ skip: 0, limit: 200 }),
+        ]);
+        setEntries((journal?.items ?? []).map(mapEntry));
+        setTotal(journal?.total ?? 0);
+        setSummary(summaryData);
+        setUsers(usersData?.items ?? []);
+      } catch (err) {
+        setError(err?.response?.data?.detail || err.message || 'Erreur de chargement');
+        setEntries([]);
+        setSummary(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  const filteredEntries = useMemo(() => {
+    let list = entries;
+    if (moduleFilter !== 'all') {
+      list = list.filter((e) => e.moduleKey.includes(moduleFilter));
+    }
+    if (userFilter !== 'all') {
+      list = list.filter((e) => String(e.userId) === userFilter);
+    }
+    return list;
+  }, [entries, moduleFilter, userFilter]);
+
+  const distribution = useMemo(() => {
+    if (!summary?.distribution?.length) {
+      return [
+        { label: 'Modifications', pct: 0, color: 'var(--af-navy)' },
+        { label: 'Créations', pct: 0, color: 'var(--af-accent)' },
+        { label: 'Suppressions', pct: 0, color: 'var(--af-danger)' },
+      ];
+    }
+    const mapLabel = {
+      UPDATE: 'Modifications',
+      CREATE: 'Créations',
+      DELETE: 'Suppressions',
+    };
+    return summary.distribution
+      .filter((d) => mapLabel[d.action])
+      .map((d) => ({
+        label: mapLabel[d.action],
+        pct: d.percent,
+        color:
+          d.action === 'DELETE'
+            ? 'var(--af-danger)'
+            : d.action === 'CREATE'
+              ? 'var(--af-accent)'
+              : 'var(--af-navy)',
+      }));
+  }, [summary]);
 
   return (
     <div className="af-page">
@@ -79,6 +163,12 @@ const AuditPage = () => {
         title="Journal d'audit"
         subtitle="Suivi chronologique de l'activité du système et des modifications d'actifs."
       />
+
+      {error && (
+        <p className="af-empty-message" style={{ marginBottom: 16, color: 'var(--af-danger)' }}>
+          {error}
+        </p>
+      )}
 
       <div className="af-audit__layout">
         <div>
@@ -103,8 +193,9 @@ const AuditPage = () => {
                 onChange={(e) => setModuleFilter(e.target.value)}
               >
                 <option value="all">Tous les modules</option>
-                <option value="actifs">Gestion d&apos;actifs</option>
-                <option value="users">Utilisateurs</option>
+                <option value="biens">Gestion d&apos;actifs</option>
+                <option value="utilisateur">Utilisateurs</option>
+                <option value="auth">Sécurité</option>
               </select>
             </div>
             <div className="af-audit__filter">
@@ -115,40 +206,65 @@ const AuditPage = () => {
                 onChange={(e) => setUserFilter(e.target.value)}
               >
                 <option value="all">Tous les responsables</option>
-                <option value="admin">Admin Admin</option>
+                {users.map((u) => (
+                  <option key={u.id} value={String(u.id)}>
+                    {u.prenom} {u.nom}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
 
           <div className="af-card">
-            {AUDIT_ENTRIES.map((entry) => {
-              const Icon = entry.icon;
-              return (
-                <div key={entry.id} className="af-audit-entry">
-                  <div
-                    className="af-audit-entry__bar"
-                    style={{ background: entry.color }}
-                  />
-                  <span className="af-audit-entry__time">{entry.time}</span>
-                  <div
-                    className="af-audit-entry__icon"
-                    style={{ background: entry.iconBg, color: entry.color }}
-                  >
-                    <Icon fontSize="small" />
+            {loading ? (
+              <p className="af-empty-message" style={{ padding: 20 }}>
+                Chargement…
+              </p>
+            ) : filteredEntries.length === 0 ? (
+              <p className="af-empty-message" style={{ padding: 20 }}>
+                Aucune donnée disponible
+              </p>
+            ) : (
+              filteredEntries.map((entry) => {
+                const Icon = entry.icon;
+                return (
+                  <div key={entry.id} className="af-audit-entry">
+                    <div className="af-audit-entry__bar" style={{ background: entry.color }} />
+                    <span className="af-audit-entry__time">{entry.time}</span>
+                    <div
+                      className="af-audit-entry__icon"
+                      style={{ background: entry.iconBg, color: entry.color }}
+                    >
+                      <Icon fontSize="small" />
+                    </div>
+                    <div className="af-audit-entry__body">
+                      <h4>{entry.title}</h4>
+                      <p>{entry.description}</p>
+                    </div>
+                    <div className="af-audit-entry__meta">
+                      <strong>ID: {entry.entityId}</strong>
+                      Module: {entry.module}
+                      {entry.userName && (
+                        <>
+                          <br />
+                          Par: {entry.userName}
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <div className="af-audit-entry__body">
-                    <h4>{entry.title}</h4>
-                    <p>{entry.description}</p>
-                  </div>
-                  <div className="af-audit-entry__meta">
-                    <strong>ID: {entry.entityId}</strong>
-                    Module: {entry.module}
-                  </div>
-                </div>
-              );
-            })}
-            <div style={{ padding: '14px 20px', fontSize: '0.8125rem', color: 'var(--af-text-muted)' }}>
-              Affichage de 5 sur 1,240 entrées
+                );
+              })
+            )}
+            <div
+              style={{
+                padding: '14px 20px',
+                fontSize: '0.8125rem',
+                color: 'var(--af-text-muted)',
+              }}
+            >
+              {filteredEntries.length === 0
+                ? 'Aucune entrée'
+                : `Affichage de ${filteredEntries.length} sur ${total} entrée(s)`}
             </div>
           </div>
         </div>
@@ -160,10 +276,9 @@ const AuditPage = () => {
             <div style={{ fontSize: '0.8125rem', color: 'var(--af-text-muted)' }}>
               Actions ce jour
             </div>
-            <div className="af-audit-sidebar__stat-value">124</div>
-            <span className="af-stat-card__trend">
-              <TrendingUpIcon sx={{ fontSize: 14, verticalAlign: 'middle' }} /> +12%
-            </span>
+            <div className="af-audit-sidebar__stat-value">
+              {loading ? '…' : summary?.actions_today ?? '—'}
+            </div>
           </div>
 
           <div className="af-audit-sidebar__section-title">Alertes critiques</div>
@@ -176,18 +291,22 @@ const AuditPage = () => {
             }}
           >
             <WarningAmberOutlinedIcon sx={{ color: 'var(--af-danger)', mb: 1 }} />
-            <strong style={{ color: 'var(--af-danger)' }}>3 suppressions</strong>
-            <p style={{ margin: '4px 0 0', fontSize: '0.8125rem', color: 'var(--af-danger-text)' }}>
+            <strong style={{ color: 'var(--af-danger)' }}>
+              {summary?.delete_today ?? 0} suppression(s)
+            </strong>
+            <p
+              style={{
+                margin: '4px 0 0',
+                fontSize: '0.8125rem',
+                color: 'var(--af-danger-text)',
+              }}
+            >
               Nécessite vérification
             </p>
           </div>
 
           <div className="af-audit-sidebar__section-title">Répartition</div>
-          {[
-            { label: 'Modifications', pct: 65, color: 'var(--af-navy)' },
-            { label: 'Créations', pct: 25, color: 'var(--af-accent)' },
-            { label: 'Suppressions', pct: 10, color: 'var(--af-danger)' },
-          ].map((row) => (
+          {distribution.map((row) => (
             <div key={row.label} className="af-distribution-row">
               <div className="af-distribution-row__head">
                 <span>{row.label}</span>
@@ -201,14 +320,6 @@ const AuditPage = () => {
               </div>
             </div>
           ))}
-
-          <div className="af-audit-cta">
-            <h4>Audit Mensuel</h4>
-            <p>Le rapport automatique de Juillet est prêt à être consulté.</p>
-            <button type="button" className="af-btn af-btn-primary" style={{ width: '100%' }}>
-              Consulter
-            </button>
-          </div>
         </aside>
       </div>
 

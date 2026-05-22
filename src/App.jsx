@@ -100,7 +100,7 @@ function App() {
             <Route 
               path="/biens" 
               element={
-                <ProtectedRoute allowedRoles={[]}>
+                <ProtectedRoute allowedRoles={['ADMIN', 'DG', 'COMPTABLE', 'TECHNICIEN']}>
                   <ListeBiens />
                 </ProtectedRoute>
               } 
@@ -109,7 +109,7 @@ function App() {
             <Route 
               path="/biens/nouveau" 
               element={
-                <ProtectedRoute allowedRoles={[]}>
+                <ProtectedRoute allowedRoles={['ADMIN', 'COMPTABLE']}>
                   <NouveauBien />
                 </ProtectedRoute>
               } 
@@ -118,7 +118,7 @@ function App() {
             <Route 
               path="/biens/:id" 
               element={
-                <ProtectedRoute allowedRoles={[]}>
+                <ProtectedRoute allowedRoles={['ADMIN', 'DG', 'COMPTABLE', 'TECHNICIEN']}>
                   <FicheBien />
                 </ProtectedRoute>
               } 
@@ -127,7 +127,7 @@ function App() {
             <Route 
               path="/biens/:id/edit" 
               element={
-                <ProtectedRoute allowedRoles={[]}>
+                <ProtectedRoute allowedRoles={['ADMIN', 'COMPTABLE']}>
                   <EditBien />
                 </ProtectedRoute>
               } 
@@ -184,7 +184,7 @@ function App() {
             <Route 
               path="/stock/alertes" 
               element={
-                <ProtectedRoute allowedRoles={['MAGASINIER', 'ADMIN']}>
+                <ProtectedRoute allowedRoles={['MAGASINIER', 'ADMIN', 'DG']}>
                   <StockAlertes />
                 </ProtectedRoute>
               } 
@@ -194,7 +194,7 @@ function App() {
             <Route 
               path="/pieces" 
               element={
-                <ProtectedRoute allowedRoles={['MAGASINIER', 'ADMIN', 'TECHNICIEN', 'COMPTABLE']}>
+                <ProtectedRoute allowedRoles={['MAGASINIER', 'ADMIN', 'TECHNICIEN']}>
                   <PiecesListe />
                 </ProtectedRoute>
               } 
@@ -332,7 +332,7 @@ function App() {
             <Route 
               path="/audit" 
               element={
-                <ProtectedRoute allowedRoles={['ADMIN', 'DG']}>
+                <ProtectedRoute allowedRoles={['ADMIN']}>
                   <AuditPage />
                 </ProtectedRoute>
               } 
@@ -394,7 +394,7 @@ function App() {
             <Route 
               path="/maintenances" 
               element={
-                <ProtectedRoute allowedRoles={['ADMIN', 'TECHNICIEN']}>
+                <ProtectedRoute allowedRoles={['ADMIN', 'TECHNICIEN', 'DG']}>
                   {/* <PlanningMaintenance /> */}
                   <div>Planning maintenance (à implémenter)</div>
                 </ProtectedRoute>

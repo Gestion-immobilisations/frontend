@@ -1,80 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PageHeader from '../components/ui/PageHeader';
 import StatCard from '../components/ui/StatCard';
 import Fab from '../components/ui/Fab';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
+import utilisateurService from '../services/utilisateurService';
+import roleService from '../services/roleService';
+import { formatDateTime } from '../utils/formatters';
+import { getRoleLabel, ROLE_BADGE_CLASS } from '../utils/roleConfig';
 import '../styles/pages/utilisateurs.css';
-
-const MOCK_USERS = [
-  {
-    id: 1,
-    prenom: 'Jean',
-    nom: 'Dupont',
-    email: 'jean.dupont@assetflow.com',
-    role: 'ADMIN',
-    statut: 'Actif',
-    derniere_connexion: 'Il y a 12 minutes',
-  },
-  {
-    id: 2,
-    prenom: 'Marie',
-    nom: 'Martin',
-    email: 'marie.martin@assetflow.com',
-    role: 'COMPTABLE',
-    statut: 'Actif',
-    derniere_connexion: 'Hier, 16:45',
-  },
-  {
-    id: 3,
-    prenom: 'Pierre',
-    nom: 'Leroy',
-    email: 'pierre.leroy@assetflow.com',
-    role: 'TECHNICIEN',
-    statut: 'Inactif',
-    derniere_connexion: '02 Oct. 2023',
-  },
-  {
-    id: 4,
-    prenom: 'Sophie',
-    nom: 'Bernard',
-    email: 'sophie.bernard@assetflow.com',
-    role: 'DG',
-    statut: 'Actif',
-    derniere_connexion: 'Il y a 2 heures',
-  },
-];
-
-const ROLE_BADGE = {
-  ADMIN: 'af-badge-admin',
-  COMPTABLE: 'af-badge-comptable',
-  DG: 'af-badge-manager',
-  TECHNICIEN: 'af-badge-inventaire',
-  MAGASINIER: 'af-badge-inventaire',
-  CAISSE: 'af-badge-neutral',
-};
-
-const ROLE_LABEL = {
-  ADMIN: 'Administrateur',
-  COMPTABLE: 'Comptable',
-  DG: 'Manager',
-  TECHNICIEN: 'Technicien',
-  MAGASINIER: 'Inventaire',
-  CAISSE: 'Caisse',
-};
 
 const UtilisateursPage = () => {
   const [activeTab, setActiveTab] = useState('tous');
+  const [users, setUsers] = useState([]);
+  const [rolesCount, setRolesCount] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const [usersData, rolesData] = await Promise.all([
+          utilisateurService.getAll({ skip: 0, limit: 500 }),
+          roleService.getAll(),
+        ]);
+        setUsers(usersData?.items ?? []);
+        setTotal(usersData?.total ?? 0);
+        setRolesCount(rolesData?.length ?? 0);
+      } catch (err) {
+        setError(err?.response?.data?.detail || err.message || 'Erreur de chargement');
+        setUsers([]);
+        setTotal(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const filtered =
     activeTab === 'tous'
-      ? MOCK_USERS
-      : MOCK_USERS.filter((u) => {
-          if (activeTab === 'administrateurs') return u.role === 'ADMIN';
-          if (activeTab === 'managers') return u.role === 'DG';
+      ? users
+      : users.filter((u) => {
+          const role = (u.role_nom || '').toUpperCase();
+          if (activeTab === 'administrateurs') return role === 'ADMIN';
+          if (activeTab === 'managers') return role === 'DG';
           return true;
         });
+
+  const activeCount = users.filter((u) => u.est_actif).length;
 
   return (
     <div className="af-page">
@@ -89,13 +67,26 @@ const UtilisateursPage = () => {
         }
       />
 
+      {error && (
+        <p className="af-empty-message" style={{ marginBottom: 16, color: 'var(--af-danger)' }}>
+          {error}
+        </p>
+      )}
+
       <div className="af-grid-stats">
-        <StatCard label="Total utilisateurs" value="1,284" trend="↑ 12%" />
-        <StatCard label="Utilisateurs actifs" value="942" meta="73% du total" />
-        <StatCard label="Nouveaux ce mois" value="48" meta="+5 aujourd'hui" />
+        <StatCard
+          label="Total utilisateurs"
+          value={loading ? '…' : String(total)}
+        />
+        <StatCard
+          label="Utilisateurs actifs"
+          value={loading ? '…' : String(activeCount)}
+          meta={total ? `${Math.round((activeCount / total) * 100)}% du total` : ''}
+        />
+        <StatCard label="Nouveaux ce mois" value="—" meta="Non disponible" />
         <StatCard
           label="Rôles configurés"
-          value="12"
+          value={loading ? '…' : String(rolesCount)}
           meta={<a href="/roles" style={{ color: 'var(--af-accent)' }}>Voir les rôles</a>}
         />
       </div>
@@ -106,7 +97,7 @@ const UtilisateursPage = () => {
             {[
               { id: 'tous', label: 'Tous' },
               { id: 'administrateurs', label: 'Administrateurs' },
-              { id: 'managers', label: 'Managers' },
+              { id: 'managers', label: 'Directeurs' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -136,62 +127,75 @@ const UtilisateursPage = () => {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((u) => (
-                <tr key={u.id}>
-                  <td>
-                    <div className="af-user-cell">
-                      <div className="af-avatar">
-                        {u.prenom.charAt(0)}
-                        {u.nom.charAt(0)}
-                      </div>
-                      <div>
-                        <strong>
-                          {u.prenom} {u.nom}
-                        </strong>
-                        <span className="af-user-cell__email">{u.email}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`af-badge ${ROLE_BADGE[u.role] || 'af-badge-neutral'}`}>
-                      {ROLE_LABEL[u.role] || u.role}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="af-badge af-badge-neutral">
-                      <span
-                        className={`af-status-dot ${
-                          u.statut === 'Actif' ? 'af-status-dot--active' : 'af-status-dot--inactive'
-                        }`}
-                      />
-                      {u.statut}
-                    </span>
-                  </td>
-                  <td>{u.derniere_connexion}</td>
-                  <td>
-                    <button type="button" className="af-btn af-btn-ghost" aria-label="Actions">
-                      <MoreVertIcon fontSize="small" />
-                    </button>
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="af-empty-message">
+                    Chargement…
                   </td>
                 </tr>
-              ))}
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="af-empty-message">
+                    Aucune donnée disponible
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((u) => {
+                  const roleCode = (u.role_nom || '').toUpperCase();
+                  const statut = u.est_actif ? 'Actif' : 'Inactif';
+                  return (
+                    <tr key={u.id}>
+                      <td>
+                        <div className="af-user-cell">
+                          <div className="af-avatar">
+                            {u.prenom?.charAt(0)}
+                            {u.nom?.charAt(0)}
+                          </div>
+                          <div>
+                            <strong>
+                              {u.prenom} {u.nom}
+                            </strong>
+                            <span className="af-user-cell__email">{u.email}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span
+                          className={`af-badge ${ROLE_BADGE_CLASS[roleCode] || 'af-badge-neutral'}`}
+                        >
+                          {getRoleLabel(roleCode)}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="af-badge af-badge-neutral">
+                          <span
+                            className={`af-status-dot ${
+                              u.est_actif ? 'af-status-dot--active' : 'af-status-dot--inactive'
+                            }`}
+                          />
+                          {statut}
+                        </span>
+                      </td>
+                      <td>{u.last_login ? formatDateTime(u.last_login) : '—'}</td>
+                      <td>
+                        <button type="button" className="af-btn af-btn-ghost" aria-label="Actions">
+                          <MoreVertIcon fontSize="small" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
 
         <div className="af-users__pagination">
-          <span>Affichage de 1 à {filtered.length} sur 1,284 utilisateurs</span>
-          <div className="af-pagination__pages">
-            <button type="button" className="af-pagination__page af-pagination__page--active">
-              1
-            </button>
-            <button type="button" className="af-pagination__page">
-              2
-            </button>
-            <button type="button" className="af-pagination__page">
-              3
-            </button>
-          </div>
+          <span>
+            {filtered.length === 0
+              ? 'Aucun utilisateur'
+              : `Affichage de ${filtered.length} sur ${total} utilisateur(s)`}
+          </span>
         </div>
       </div>
 

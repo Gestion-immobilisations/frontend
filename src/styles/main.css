@@ -24,6 +24,13 @@ html {
   scroll-behavior: smooth;
 }
 
+.af-empty-message {
+  color: var(--af-text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 12px;
+}
+
 body {
   font-family: var(--font-family-base);
   background: var(--af-bg);

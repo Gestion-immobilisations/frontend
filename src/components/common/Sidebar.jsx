@@ -29,7 +29,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { title: 'Dashboard', path: '/dashboard', icon: DashboardOutlinedIcon, roles: [] },
     { title: 'Users', path: '/utilisateurs', icon: PeopleOutlineIcon, roles: ['ADMIN'] },
     { title: 'Roles', path: '/roles', icon: ShieldOutlinedIcon, roles: ['ADMIN'] },
-    { title: 'Audit', path: '/audit', icon: HistoryOutlinedIcon, roles: ['ADMIN', 'DG'] },
+    { title: 'Audit', path: '/audit', icon: HistoryOutlinedIcon, roles: ['ADMIN'] },
     { title: 'Settings', path: '/parametres', icon: SettingsOutlinedIcon, roles: ['ADMIN'] },
   ];
 
@@ -40,12 +40,17 @@ const Sidebar = ({ isOpen, onClose }) => {
       roles: ['ADMIN', 'DG', 'COMPTABLE', 'TECHNICIEN'],
       children: [
         { title: 'Tous les biens', path: '/biens', roles: ['ADMIN', 'DG', 'COMPTABLE', 'TECHNICIEN'] },
-        { title: 'Nouveau bien', path: '/biens/nouveau', roles: ['ADMIN'] },
+        { title: 'Nouveau bien', path: '/biens/nouveau', roles: ['ADMIN', 'COMPTABLE'] },
       ],
     },
-    { title: 'Pannes', path: '/pannes', icon: BuildOutlinedIcon, roles: ['ADMIN', 'TECHNICIEN', 'DG'] },
+    { title: 'Pannes', path: '/pannes', icon: BuildOutlinedIcon, roles: ['ADMIN', 'TECHNICIEN'] },
     { title: 'Maintenances', path: '/maintenances', icon: BuildOutlinedIcon, roles: ['ADMIN', 'TECHNICIEN', 'DG'] },
-    { title: 'Pièces', path: '/pieces', icon: Inventory2OutlinedIcon, roles: ['ADMIN', 'TECHNICIEN', 'COMPTABLE', 'MAGASINIER'] },
+    {
+      title: 'Pièces',
+      path: '/pieces',
+      icon: Inventory2OutlinedIcon,
+      roles: ['ADMIN', 'TECHNICIEN', 'MAGASINIER'],
+    },
     {
       title: 'Gestion des stocks',
       icon: Inventory2OutlinedIcon,
@@ -56,15 +61,22 @@ const Sidebar = ({ isOpen, onClose }) => {
         { title: 'Sorties', path: '/stock/sorties', roles: ['MAGASINIER', 'ADMIN'] },
         { title: 'Mouvements', path: '/stock/mouvements', roles: ['MAGASINIER', 'ADMIN'] },
         { title: 'Inventaire', path: '/stock/inventaire', roles: ['MAGASINIER', 'ADMIN'] },
-        { title: 'Alertes', path: '/stock/alertes', roles: ['MAGASINIER', 'ADMIN'] },
+        { title: 'Alertes', path: '/stock/alertes', roles: ['MAGASINIER', 'ADMIN', 'DG'] },
       ],
+    },
+    {
+      title: 'Amortissements',
+      path: '/amortissements',
+      icon: AssessmentOutlinedIcon,
+      roles: ['ADMIN', 'COMPTABLE'],
     },
     {
       title: 'Rapports',
       icon: AssessmentOutlinedIcon,
       roles: ['ADMIN', 'DG', 'COMPTABLE', 'MAGASINIER'],
       children: [
-        { title: 'Rapports généraux', path: '/rapports', roles: ['ADMIN', 'DG', 'COMPTABLE'] },
+        { title: 'Rapports financiers', path: '/rapports', roles: ['ADMIN', 'COMPTABLE'] },
+        { title: 'Rapports analytiques', path: '/rapports', roles: ['ADMIN', 'DG'] },
         { title: 'Stock', path: '/rapports/stock', roles: ['ADMIN', 'DG', 'COMPTABLE', 'MAGASINIER'] },
         { title: 'Mouvements', path: '/rapports/mouvements', roles: ['ADMIN', 'DG', 'MAGASINIER'] },
         { title: 'Valeur stock', path: '/rapports/valeur-stock', roles: ['ADMIN', 'DG', 'COMPTABLE', 'MAGASINIER'] },
@@ -194,7 +206,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           )}
         </nav>
 
-        {hasAnyRole(['ADMIN', 'DG']) && (
+        {hasAnyRole(['ADMIN']) && (
           <div className="af-sidebar__compliance">
             <p className="af-sidebar__compliance-title">Système Sécurisé</p>
             <div className="af-sidebar__compliance-bar">
